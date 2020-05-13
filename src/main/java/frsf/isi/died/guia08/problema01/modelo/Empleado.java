@@ -72,7 +72,7 @@ public class Empleado {
 	
 	//--- Métodos ---
 	
-	//Ejercicio 2.a
+	//----- Ejercicio 2.a -----
 	/** - Empleados contratados -> No pueden tener más de 5 tareas asignadas pendientes
 	 *  - Empleados efectivos -> No pueden tener tareas asignadas pendientes que sumen
 	 *  más de 15 horas de trabajo estimado
@@ -91,8 +91,6 @@ public class Empleado {
 		}
 		return false;
 	}
-	
-	
 
 	/** Comprueba que las tareas pendientes del empleado no sumen más de 15 horas
 	 */
@@ -109,10 +107,12 @@ public class Empleado {
 		}
 	}
 	
+	//----- Ejercicio 2.b -----
 	public Double salario() {
 		// cargar todas las tareas no facturadas
 		// calcular el costo
 		// marcarlas como facturadas.
+		
 		return 0.0;
 	}
 	

@@ -2,6 +2,9 @@ package frsf.isi.died.guia08.problema01.modelo;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +35,7 @@ public class EmpleadoTest {
 		e2.getTareasAsignadas().add(t6); // 15 horas de trabajo estimado
 	}
 	
-	//Ejercicio 2.a
+	//----- Ejercicio 2.a ------
 	@Test
 	/**
 	 *  Como el empleado es contratado y no tiene más de 5 tareas pendientes asignadas, se le puede asignar la tarea
@@ -69,6 +72,23 @@ public class EmpleadoTest {
 		assertFalse(e2.asignarTarea(t1));
 	}
 	
+	@Test
+	public void testAsignarTareaEmpleadoYaAsignado() {
+		t1.setEmpleadoAsignado(e1);
+		try {
+			assertFalse(e2.asignarTarea(t1));
+			} catch(AsignacionIncorrectaException e) {}
+	}
+	
+	@Test
+	public void testAsignarTareaFinalizada() {
+		t1.setFechaFin(LocalDateTime.now());
+		try {
+		assertFalse(e2.asignarTarea(t1));
+		} catch(AsignacionIncorrectaException e) {}
+	}
+	
+	//----- Ejercicio 2.b ------
 	@Test
 	public void testSalario() {
 		fail("Not yet implemented");

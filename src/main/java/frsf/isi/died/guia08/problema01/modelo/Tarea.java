@@ -76,7 +76,11 @@ public class Tarea {
 		return empleadoAsignado;
 	}
 	
-	
+	public void setEmpleadoAsignado(Empleado empleadoAsignado) {
+		this.empleadoAsignado = empleadoAsignado;
+	}
+
+
 	//--- Métodos ---
 	public void asignarEmpleado(Empleado e) {
 		// si la tarea ya tiene un empleado asignado
