@@ -1,12 +1,16 @@
 package frsf.isi.died.guia08.problema01.modelo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+
 public class Empleado {
 
+	//--- Atributos ---
 	public enum Tipo { CONTRATADO,EFECTIVO}; 
 	
 	private Integer cuil;
@@ -18,6 +22,92 @@ public class Empleado {
 	private Function<Tarea, Double> calculoPagoPorTarea;		
 	private Predicate<Tarea> puedeAsignarTarea;
 
+	
+	//--- Constructores ---
+	public Empleado(Integer c, String n, Tipo t, Double costo) {
+		cuil = c;
+		nombre = n;
+		tipo = t;
+		costoHora = costo;
+		tareasAsignadas = new ArrayList<Tarea>();
+	}
+	
+	//Getters y Setters
+	public Integer getCuil() {
+		return cuil;
+	}
+
+	public void setCuil(Integer cuil) {
+		this.cuil = cuil;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public Tipo getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(Tipo tipo) {
+		this.tipo = tipo;
+	}
+
+	public Double getCostoHora() {
+		return costoHora;
+	}
+
+	public void setCostoHora(Double costoHora) {
+		this.costoHora = costoHora;
+	}
+
+	public List<Tarea> getTareasAsignadas() {
+		return tareasAsignadas;
+	}
+	
+	
+	//--- Métodos ---
+	
+	//Ejercicio 2.a
+	/** - Empleados contratados -> No pueden tener más de 5 tareas asignadas pendientes
+	 *  - Empleados efectivos -> No pueden tener tareas asignadas pendientes que sumen
+	 *  más de 15 horas de trabajo estimado
+	 *  - En caso de asignar un empleado a una tarea que ya tiene otro empleado asignado
+	 *  o a una tarea que ya fue finalizada, se lanza una excepción
+	 */
+	public Boolean asignarTarea(Tarea t) throws AsignacionIncorrectaException {
+		if(t.getEmpleadoAsignado() != null || t.getFechaFin() != null) {
+			throw new AsignacionIncorrectaException();
+		}
+		if(tipo == Tipo.CONTRATADO && tareasAsignadas.size()<=5) {
+			return true;
+		}
+		else if(tipo == Tipo.EFECTIVO && efectivoTareasPendientes()) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+
+	/** Comprueba que las tareas pendientes del empleado no sumen más de 15 horas
+	 */
+	public Boolean efectivoTareasPendientes() {
+		int horas = 0;
+		for(Tarea t: tareasAsignadas) {
+			horas += t.getDuracionEstimada();
+		}
+		if(horas<=15) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 	public Double salario() {
 		// cargar todas las tareas no facturadas
@@ -34,10 +124,6 @@ public class Empleado {
 	 */
 	public Double costoTarea(Tarea t) {
 		return 0.0;
-	}
-		
-	public Boolean asignarTarea(Tarea t) {
-		return false;
 	}
 	
 	public void comenzar(Integer idTarea) {

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class Tarea {
 
+	//--- Atributos ---
 	private Integer id;
 	private String descripcion;
 	private Integer duracionEstimada;
@@ -12,11 +13,17 @@ public class Tarea {
 	private LocalDateTime fechaFin;
 	private Boolean facturada;
 	
-	public void asignarEmpleado(Empleado e) {
-		// si la tarea ya tiene un empleado asignado
-		// y tiene fecha de finalizado debe lanzar una excepcion
+	
+	//--- Constructores ---
+	public Tarea(Integer id, String desc, Integer durac) {
+		this.id = id;
+		descripcion = desc;
+		duracionEstimada = durac;
+		facturada = false;
 	}
 
+	
+	//--- Getters y Setters ---
 	public Integer getId() {
 		return id;
 	}
@@ -69,5 +76,12 @@ public class Tarea {
 		return empleadoAsignado;
 	}
 	
+	
+	//--- Métodos ---
+	public void asignarEmpleado(Empleado e) {
+		// si la tarea ya tiene un empleado asignado
+		// y tiene fecha de finalizado debe lanzar una excepcion
+	}
+
 	
 }
