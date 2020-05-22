@@ -33,9 +33,11 @@ public class Empleado {
 		switch(t) {
 		case CONTRATADO:
 			puedeAsignarTarea = tarea -> tarea.getEmpleadoAsignado().getTareasAsignadas().size()<=5;
+			calculoPagoPorTarea = tarea -> tarea.calcularPotenciadorContratado()*tarea.getDuracionEstimada()*costoHora;
 			break;
 		case EFECTIVO:
 			puedeAsignarTarea = tarea -> tarea.getEmpleadoAsignado().efectivoTareasPendientes()<=15;
+			calculoPagoPorTarea = tarea -> tarea.calcularPotenciadorEfectivo()*tarea.getDuracionEstimada()*costoHora;
 			break;
 		}
 	}
@@ -106,18 +108,24 @@ public class Empleado {
 		// calcular el costo
 		// marcarlas como facturadas.
 		
-		List<Tarea> lista = tareasAsignadas.stream()
+		return tareasAsignadas.stream()
 				   .filter(t -> t.getFacturada() == false)
-				   .collect(Collectors.toList());
+				   .collect(Collectors.summingDouble(t -> t.getEmpleadoAsignado().costoTarea(t)));
+		
+		
+		//ANTES
+		//List<Tarea> lista = tareasAsignadas.stream()
+		//   				   				 .filter(t -> t.getFacturada() == false)
+		//									 .collect(Collectors.toList());
+		
+		//Double s = 0.0;
+		//for(Tarea t: lista) {
+		//		s += this.costoTarea(t);
+		//}
 
-		Double s = 0.0;
-		for(Tarea t: lista) {
-				s += this.costoTarea(t);
-		}
+		//lista.stream().forEach(t -> t.setFacturada(true));
 
-		lista.stream().forEach(t -> t.setFacturada(true));
-
-		return s;	
+		//return s;	
 		
 	}
 	
@@ -129,9 +137,11 @@ public class Empleado {
 	 */
 	public Double costoTarea(Tarea t) {
 		if(t.getFechaFin() != null) {
-			
+			return calculoPagoPorTarea.apply(t);
 		}
-		return 0.0;
+		else {
+			return t.getDuracionEstimada()*costoHora;
+		}
 	}
 	
 	public void comenzar(Integer idTarea) {

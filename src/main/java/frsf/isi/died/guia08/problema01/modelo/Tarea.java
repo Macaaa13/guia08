@@ -96,6 +96,37 @@ public class Tarea {
 		Duration d = Duration.between(fechaInicio, fechaFin);
 		return (d.toDays())*4;
 	}
+	
+	/** Los empleados cobran un extra si terminan la tarea antes de lo planificado.
+	 *  Los empleados efectivos aumentan el valor de su hora en un 20% en aquellas
+	 *  tareas que finalizaron antes.
+	 */
+	public Double calcularPotenciadorEfectivo() {
+		if(getDuracionEstimada() - duracionTotal()>0) {
+			return 1.2;
+		}
+		return 1.0;
+	}
+	
+	
+	/** Los empleados cobran un extra si terminan la tarea antes de lo planificado.
+	 *  Los empleados contratados aumentan el valor de su hora en un 30% para estas 
+	 *  tareas, y si demoran más de 2 días en finalizarla se cobrará un 75% de su 
+	 *  valor hora.
+	 */
+	public Double calcularPotenciadorContratado() {
+		long duracion = getDuracionEstimada() - duracionTotal();
+		// Cada día tiene 4 horas de trabajo estimado.
+		// Si supera las 8 horas de diferencia significa que tardó más de 2 días
+		// en finalizar la tarea
+		if(duracion<-8) {
+			return 0.75;
+		}
+		else if(duracion>0) {
+			return 1.3;
+		}
+		return 1.0;
+	}
 
 	
 }
