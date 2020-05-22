@@ -1,10 +1,10 @@
 package frsf.isi.died.guia08.problema01.modelo;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
 
@@ -19,7 +19,7 @@ public class Empleado {
 	private Double costoHora;
 	private List<Tarea> tareasAsignadas;
 	
-	private Function<Tarea, Double> calculoPagoPorTarea;		
+	private Function<Tarea, Double> calculoPagoPorTarea;
 	private Predicate<Tarea> puedeAsignarTarea;
 
 	
@@ -30,6 +30,14 @@ public class Empleado {
 		tipo = t;
 		costoHora = costo;
 		tareasAsignadas = new ArrayList<Tarea>();
+		switch(t) {
+		case CONTRATADO:
+			puedeAsignarTarea = tarea -> tarea.getEmpleadoAsignado().getTareasAsignadas().size()<=5;
+			break;
+		case EFECTIVO:
+			puedeAsignarTarea = tarea -> tarea.getEmpleadoAsignado().efectivoTareasPendientes()<=15;
+			break;
+		}
 	}
 	
 	//Getters y Setters
@@ -80,31 +88,16 @@ public class Empleado {
 	 *  o a una tarea que ya fue finalizada, se lanza una excepción
 	 */
 	public Boolean asignarTarea(Tarea t) throws AsignacionIncorrectaException {
-		if(t.getEmpleadoAsignado() != null || t.getFechaFin() != null) {
+		if(t.getEmpleadoAsignado() != this || t.getFechaFin() != null) {
 			throw new AsignacionIncorrectaException();
 		}
-		if(tipo == Tipo.CONTRATADO && tareasAsignadas.size()<=5) {
-			return true;
-		}
-		else if(tipo == Tipo.EFECTIVO && efectivoTareasPendientes()) {
-			return true;
-		}
-		return false;
+		return puedeAsignarTarea.test(t);
 	}
 
 	/** Comprueba que las tareas pendientes del empleado no sumen más de 15 horas
 	 */
-	public Boolean efectivoTareasPendientes() {
-		int horas = 0;
-		for(Tarea t: tareasAsignadas) {
-			horas += t.getDuracionEstimada();
-		}
-		if(horas<=15) {
-			return true;
-		}
-		else {
-			return false;
-		}
+	public Integer efectivoTareasPendientes() {
+		return tareasAsignadas.stream().mapToInt(t -> t.getDuracionEstimada()).sum();
 	}
 	
 	//----- Ejercicio 2.b -----
@@ -113,7 +106,19 @@ public class Empleado {
 		// calcular el costo
 		// marcarlas como facturadas.
 		
-		return 0.0;
+		List<Tarea> lista = tareasAsignadas.stream()
+				   .filter(t -> t.getFacturada() == false)
+				   .collect(Collectors.toList());
+
+		Double s = 0.0;
+		for(Tarea t: lista) {
+				s += this.costoTarea(t);
+		}
+
+		lista.stream().forEach(t -> t.setFacturada(true));
+
+		return s;	
+		
 	}
 	
 	/**
@@ -123,6 +128,9 @@ public class Empleado {
 	 * @return
 	 */
 	public Double costoTarea(Tarea t) {
+		if(t.getFechaFin() != null) {
+			
+		}
 		return 0.0;
 	}
 	

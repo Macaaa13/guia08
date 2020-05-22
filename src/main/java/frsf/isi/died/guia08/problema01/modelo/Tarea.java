@@ -1,5 +1,6 @@
 package frsf.isi.died.guia08.problema01.modelo;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Tarea {
@@ -85,6 +86,15 @@ public class Tarea {
 	public void asignarEmpleado(Empleado e) {
 		// si la tarea ya tiene un empleado asignado
 		// y tiene fecha de finalizado debe lanzar una excepcion
+	}
+	
+	//Ejercicio 2.b
+	/*   Al ser 4 horas teóricas de trabajo diarias, se calculan los días entre la fecha de inicio
+	 *   y final de la tarea y se multiplica por esas 4 horas.
+	 */
+	public long duracionTotal() {
+		Duration d = Duration.between(fechaInicio, fechaFin);
+		return (d.toDays())*4;
 	}
 
 	
