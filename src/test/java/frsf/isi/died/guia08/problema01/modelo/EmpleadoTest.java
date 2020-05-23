@@ -6,6 +6,7 @@ import org.junit.*;
 import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
 
 public class EmpleadoTest {
@@ -111,6 +112,7 @@ public class EmpleadoTest {
 		e2.asignarTarea(t1);
 	}
 	
+	
 	//----- Ejercicio 2.b ------
 	//Test del método salario
 	@Test
@@ -211,10 +213,30 @@ public class EmpleadoTest {
 		assertEquals(esperado, e2.costoTarea(t7));
 	}
 
+
+	//----- Ejercicio 2.c ------
+	//Test del método comenzar
+	@Test(expected = TareaInexistenteException.class)
+	/** El empleado e1 tiene las primeras 5 tareas.
+	 *  Si buscamos la sexta para comenzarla, deberá ocurrir una excepción.
+	 */ 
+	public void testComenzarTareaInexistente() throws TareaInexistenteException {
+		e1.comenzar(6);
+	}
+	
 	@Test
-	@Ignore
-	public void testComenzarInteger() {
-		fail("Not yet implemented");
+	/** Como el empleado e1 tiene la tarea t5, al verificar la fecha de ésta última
+	 *  debemos obtener la fecha actual
+	 */
+	public void testComenzarTarea() throws TareaInexistenteException {
+		e1.comenzar(5);
+		LocalDateTime fecha = LocalDateTime.now();
+		assertEquals(fecha, t5.getFechaInicio());
+	}
+	
+	@Test(expected = TareaInexistenteException.class)
+	public void testComenzarTareasAsignadasVacia() throws TareaInexistenteException {
+		e3.comenzar(1);
 	}
 
 	@Test

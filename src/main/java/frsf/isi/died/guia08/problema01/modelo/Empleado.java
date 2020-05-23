@@ -1,12 +1,15 @@
 package frsf.isi.died.guia08.problema01.modelo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
 
 public class Empleado {
 
@@ -140,10 +143,20 @@ public class Empleado {
 		return this.calculoPagoPorTarea.apply(t);
 	}
 	
-	public void comenzar(Integer idTarea) {
+	//-------------------------
+		//----- Ejercicio 2.c -----
+		//-------------------------
+	public void comenzar(Integer idTarea) throws TareaInexistenteException {
 		// busca la tarea en la lista de tareas asignadas 
 		// si la tarea no existe lanza una excepción
 		// si la tarea existe indica como fecha de inicio la fecha y hora actual
+		Optional<Tarea> tarea = tareasAsignadas.stream().filter(t -> t.getId() == idTarea).findFirst();
+		if(tarea.isEmpty()) {
+			throw new TareaInexistenteException("La tarea que desea comenzar no se encuentra en la lista de tareas asignadas.");
+		}
+		else {
+			tarea.get().setFechaInicio(LocalDateTime.now());
+		}
 	}
 	
 	public void finalizar(Integer idTarea) {
