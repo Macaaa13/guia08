@@ -30,16 +30,6 @@ public class Empleado {
 		tipo = t;
 		costoHora = costo;
 		tareasAsignadas = new ArrayList<Tarea>();
-		switch(t) {
-		case CONTRATADO:
-			puedeAsignarTarea = tarea -> tarea.getEmpleadoAsignado().getTareasAsignadas().size()<=5;
-			calculoPagoPorTarea = tarea -> tarea.calcularPotenciadorContratado()*tarea.getDuracionEstimada()*costoHora;
-			break;
-		case EFECTIVO:
-			puedeAsignarTarea = tarea -> tarea.getEmpleadoAsignado().efectivoTareasPendientes()<=15;
-			calculoPagoPorTarea = tarea -> tarea.calcularPotenciadorEfectivo()*tarea.getDuracionEstimada()*costoHora;
-			break;
-		}
 	}
 	
 	//Getters y Setters
@@ -82,7 +72,26 @@ public class Empleado {
 	
 	//--- Métodos ---
 	
+	public void configurarEfectivo() {
+		puedeAsignarTarea = t -> this.efectivoTareasPendientes()<=15;
+		calculoPagoPorTarea = t -> {
+			if(t.tareaAdelantada()) { return t.getDuracionEstimada()*this.costoHora*1.2;}
+			return t.getDuracionEstimada()*this.costoHora;
+		};
+	}
+	
+	public void configurarContratado() {
+		puedeAsignarTarea = t -> this.getTareasAsignadas().size()<=5;
+		calculoPagoPorTarea = t -> {
+			if(t.tareaAdelantada()) { return t.getDuracionEstimada()*this.costoHora*1.3;}
+			if(t.tareaAtrasada()) { return t.getDuracionEstimada()*this.costoHora*0.75; }
+			return t.getDuracionEstimada()*this.costoHora;
+		};	
+	}
+	
+	//-------------------------
 	//----- Ejercicio 2.a -----
+	//-------------------------
 	/** - Empleados contratados -> No pueden tener más de 5 tareas asignadas pendientes
 	 *  - Empleados efectivos -> No pueden tener tareas asignadas pendientes que sumen
 	 *  más de 15 horas de trabajo estimado
@@ -93,7 +102,7 @@ public class Empleado {
 		if(t.getEmpleadoAsignado() != this || t.getFechaFin() != null) {
 			throw new AsignacionIncorrectaException();
 		}
-		return puedeAsignarTarea.test(t);
+		return this.puedeAsignarTarea.test(t);
 	}
 
 	/** Comprueba que las tareas pendientes del empleado no sumen más de 15 horas
@@ -102,7 +111,9 @@ public class Empleado {
 		return tareasAsignadas.stream().mapToInt(t -> t.getDuracionEstimada()).sum();
 	}
 	
+	//-------------------------
 	//----- Ejercicio 2.b -----
+	//-------------------------
 	public Double salario() {
 		// cargar todas las tareas no facturadas
 		// calcular el costo
@@ -110,22 +121,12 @@ public class Empleado {
 		
 		return tareasAsignadas.stream()
 				   .filter(t -> t.getFacturada() == false)
-				   .collect(Collectors.summingDouble(t -> t.getEmpleadoAsignado().costoTarea(t)));
-		
-		
-		//ANTES
-		//List<Tarea> lista = tareasAsignadas.stream()
-		//   				   				 .filter(t -> t.getFacturada() == false)
-		//									 .collect(Collectors.toList());
-		
-		//Double s = 0.0;
-		//for(Tarea t: lista) {
-		//		s += this.costoTarea(t);
-		//}
-
-		//lista.stream().forEach(t -> t.setFacturada(true));
-
-		//return s;	
+				   .map(t -> {
+					   t.setFacturada(true);
+					   return t;
+				   })
+				   .mapToDouble(t -> this.costoTarea(t))
+				   .sum();
 		
 	}
 	
@@ -136,12 +137,7 @@ public class Empleado {
 	 * @return
 	 */
 	public Double costoTarea(Tarea t) {
-		if(t.getFechaFin() != null) {
-			return calculoPagoPorTarea.apply(t);
-		}
-		else {
-			return t.getDuracionEstimada()*costoHora;
-		}
+		return this.calculoPagoPorTarea.apply(t);
 	}
 	
 	public void comenzar(Integer idTarea) {

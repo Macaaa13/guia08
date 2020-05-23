@@ -89,43 +89,28 @@ public class Tarea {
 	}
 	
 	//Ejercicio 2.b
-	/*   Al ser 4 horas teóricas de trabajo diarias, se calculan los días entre la fecha de inicio
-	 *   y final de la tarea y se multiplica por esas 4 horas.
+	/** Se estiman 4 horas de trabajo por día, por lo que se múltiplica por 4
+	 *	la diferencia en días entre la fecha de inicio y la final, obteniendo las horas
+	 *  trabajadas por días.
+	 *  Si la diferencia entre la duración estimada y la real es mayor a 0, significa
+	 *  que la tarea fue terminada antes de lo estimado.
 	 */
-	public long duracionTotal() {
-		Duration d = Duration.between(fechaInicio, fechaFin);
-		return (d.toDays())*4;
+	public Boolean tareaAdelantada() {
+		if(this.getDuracionEstimada()-(Duration.between(fechaInicio, fechaFin).toDays()*4)>0) {
+			return true;
+		}
+		return false;
 	}
 	
-	/** Los empleados cobran un extra si terminan la tarea antes de lo planificado.
-	 *  Los empleados efectivos aumentan el valor de su hora en un 20% en aquellas
-	 *  tareas que finalizaron antes.
+	/** Si un empleado contratado se demora más de 2 días en finalizar la tarea respecto a lo
+	 *  que estaba estimado, la diferencia entre la duración estimada y la real es menor que -8,
+	 *  ya que para cada día de trabajo se estiman 4 horas.
 	 */
-	public Double calcularPotenciadorEfectivo() {
-		if(getDuracionEstimada() - duracionTotal()>0) {
-			return 1.2;
+	public Boolean tareaAtrasada() {
+		if((this.getDuracionEstimada()-(Duration.between(fechaInicio, fechaFin).toDays()*4))<-8) {
+			return true;
 		}
-		return 1.0;
-	}
-	
-	
-	/** Los empleados cobran un extra si terminan la tarea antes de lo planificado.
-	 *  Los empleados contratados aumentan el valor de su hora en un 30% para estas 
-	 *  tareas, y si demoran más de 2 días en finalizarla se cobrará un 75% de su 
-	 *  valor hora.
-	 */
-	public Double calcularPotenciadorContratado() {
-		long duracion = getDuracionEstimada() - duracionTotal();
-		// Cada día tiene 4 horas de trabajo estimado.
-		// Si supera las 8 horas de diferencia significa que tardó más de 2 días
-		// en finalizar la tarea
-		if(duracion<-8) {
-			return 0.75;
-		}
-		else if(duracion>0) {
-			return 1.3;
-		}
-		return 1.0;
+		return false;
 	}
 
 	
