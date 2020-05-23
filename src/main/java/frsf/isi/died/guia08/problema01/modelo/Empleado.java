@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaNoComenzadaException;
 
 public class Empleado {
 
@@ -144,8 +144,8 @@ public class Empleado {
 	}
 	
 	//-------------------------
-		//----- Ejercicio 2.c -----
-		//-------------------------
+	//----- Ejercicio 2.c -----
+	//-------------------------
 	public void comenzar(Integer idTarea) throws TareaInexistenteException {
 		// busca la tarea en la lista de tareas asignadas 
 		// si la tarea no existe lanza una excepción
@@ -159,10 +159,26 @@ public class Empleado {
 		}
 	}
 	
-	public void finalizar(Integer idTarea) {
+	//-------------------------
+	//----- Ejercicio 2.d -----
+	//-------------------------
+	/** Considero necesaria la creación de una excepción que se lance si se trata de finalizar
+	 *  una tarea que no ha sido comenzada
+	 */
+	public void finalizar(Integer idTarea) throws TareaInexistenteException, TareaNoComenzadaException {
 		// busca la tarea en la lista de tareas asignadas 
 		// si la tarea no existe lanza una excepción
 		// si la tarea existe indica como fecha de finalizacion la fecha y hora actual
+		Optional<Tarea> tarea = tareasAsignadas.stream().filter(t -> t.getId() == idTarea).findFirst();
+		if(tarea.isEmpty()) {
+			throw new TareaInexistenteException("La tarea que desea finalizar no se encuentra en la lista de tareas asignadas.");
+		}
+		else if(tarea.get().getFechaInicio() == null) {
+			throw new TareaNoComenzadaException();
+		}
+		else {
+			tarea.get().setFechaFin(LocalDateTime.now());
+		}
 	}
 
 	public void comenzar(Integer idTarea,String fecha) {

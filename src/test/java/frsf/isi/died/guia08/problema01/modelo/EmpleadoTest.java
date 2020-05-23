@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaNoComenzadaException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
 
 public class EmpleadoTest {
@@ -217,37 +218,60 @@ public class EmpleadoTest {
 	//----- Ejercicio 2.c ------
 	//Test del método comenzar
 	@Test(expected = TareaInexistenteException.class)
-	/** El empleado e1 tiene las primeras 5 tareas.
-	 *  Si buscamos la sexta para comenzarla, deberá ocurrir una excepción.
+	/** El empleado e1 tiene las primeras 5 tareas en la lista de tareas asignadas.
+	 *  Si buscamos la sexta para comenzarla, deberá ocurrir una TareaInexistenteException
 	 */ 
-	public void testComenzarTareaInexistente() throws TareaInexistenteException {
+	public void testComenzarIntegerTareaInexistente() throws TareaInexistenteException {
 		e1.comenzar(6);
 	}
 	
 	@Test
-	/** Como el empleado e1 tiene la tarea t5, al verificar la fecha de ésta última
-	 *  debemos obtener la fecha actual
+	/** Como el empleado e1 tiene la tarea t5 en la lista de tareas asignadas, al verificar la fecha
+	 *  de inicio de ésta última debemos obtener la fecha actual
 	 */
-	public void testComenzarTarea() throws TareaInexistenteException {
+	public void testComenzarIntegerTarea() throws TareaInexistenteException {
 		e1.comenzar(5);
 		LocalDateTime fecha = LocalDateTime.now();
 		assertEquals(fecha, t5.getFechaInicio());
 	}
 	
 	@Test(expected = TareaInexistenteException.class)
-	public void testComenzarTareasAsignadasVacia() throws TareaInexistenteException {
+	public void testComenzarIntegerTareasAsignadasVacia() throws TareaInexistenteException {
 		e3.comenzar(1);
 	}
 
-	@Test
-	@Ignore
-	public void testFinalizarInteger() {
-		fail("Not yet implemented");
+	//----- Ejercicio 2.d ------
+	//Test del método finalizar
+	@Test(expected = TareaInexistenteException.class)
+	/** El empleado e1 tiene las primeras 5 tareas en la lista de tareas asignadas.
+	 *  Si buscamos la sexta para finalizarla, deberá ocurrir una TareaInexistenteException
+	 */ 
+	public void testFinalizarIntegerTareaInexistente() throws TareaInexistenteException, TareaNoComenzadaException {
+		e1.finalizar(6);
 	}
-
+	
+	@Test(expected = TareaNoComenzadaException.class)
+	/** El empleado e1 tiene la tarea t5 en la lista de tareas asignadas, pero como no fue comenzada no se 
+	 *  puede finalizar y deberá ocurrir una TareaNoComenzadaException
+	 */
+	public void testFinalizarIntegerTareaNoComenzada() throws TareaInexistenteException, TareaNoComenzadaException {
+		e1.finalizar(5);
+	}
+	
+	@Test
+	/** Como el empleado e1 tiene la tarea t5 en la lista de tareas asignadas y esta fue comenzada, al verificar 
+	 *  la fecha final de ésta última debemos obtener la fecha actual
+	 */
+	public void testFinalizarIntegerTarea() throws TareaInexistenteException, TareaNoComenzadaException {
+		e1.comenzar(5);
+		e1.finalizar(5);
+		LocalDateTime fecha = LocalDateTime.now();
+		assertEquals(fecha, t5.getFechaFin());
+	}
+	
 	@Test
 	@Ignore
-	public void testComenzarIntegerString() {
+	public void testComenzarIntegerString()  {
 		fail("Not yet implemented");
 	}
 
