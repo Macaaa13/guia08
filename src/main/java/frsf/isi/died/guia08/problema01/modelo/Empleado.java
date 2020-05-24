@@ -1,6 +1,7 @@
 package frsf.isi.died.guia08.problema01.modelo;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -181,10 +182,21 @@ public class Empleado {
 		}
 	}
 
-	public void comenzar(Integer idTarea,String fecha) {
+	//-------------------------
+	//----- Ejercicio 2.e -----
+	//-------------------------
+	public void comenzar(Integer idTarea,String fecha) throws TareaInexistenteException {
 		// busca la tarea en la lista de tareas asignadas 
 		// si la tarea no existe lanza una excepción
 		// si la tarea existe indica como fecha de finalizacion la fecha y hora actual
+		Optional<Tarea> tarea = tareasAsignadas.stream().filter(t -> t.getId() == idTarea).findFirst();
+		if(tarea.isEmpty()) {
+			throw new TareaInexistenteException("La tarea que desea comenzar no se encuentra en la lista de tareas asignadas.");
+		}
+		else {
+			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+			tarea.get().setFechaInicio(LocalDateTime.parse(fecha, formato));
+		}
 	}
 	
 	public void finalizar(Integer idTarea,String fecha) {

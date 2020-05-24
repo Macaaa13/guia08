@@ -235,6 +235,9 @@ public class EmpleadoTest {
 		assertEquals(fecha, t5.getFechaInicio());
 	}
 	
+	/** El empleado e3 no tiene tareas asignadas, por lo que no se encuentra la tarea solicitada
+	 *  y deberá ocurrir una TareaInexistenteException
+	 */
 	@Test(expected = TareaInexistenteException.class)
 	public void testComenzarIntegerTareasAsignadasVacia() throws TareaInexistenteException {
 		e3.comenzar(1);
@@ -269,12 +272,25 @@ public class EmpleadoTest {
 		assertEquals(fecha, t5.getFechaFin());
 	}
 	
-	@Test
-	@Ignore
-	public void testComenzarIntegerString()  {
-		fail("Not yet implemented");
+	//----- Ejercicio 2.d ------
+	//Test del método comenzar sobrecargado
+	@Test(expected = TareaInexistenteException.class)
+	public void testComenzarIntegerStringTareaInexistente() throws TareaInexistenteException  {
+		e1.comenzar(6, "01-09-2020 22:00");
 	}
-
+	
+	@Test
+	public void testComenzarIntegerString() throws TareaInexistenteException  {
+		e1.comenzar(5, "01-09-2020 22:00");
+		LocalDateTime fecha = LocalDateTime.of(2020, 9, 1, 22, 0);
+		assertEquals(fecha, t5.getFechaInicio());
+	}
+	
+	@Test(expected = TareaInexistenteException.class)
+	public void testComenzarIntegerStringTareasAsignadasVacia() throws TareaInexistenteException  {
+		e3.comenzar(5, "01-09-2020 22:00");
+	}
+	
 	@Test
 	@Ignore
 	public void testFinalizarIntegerString() {
