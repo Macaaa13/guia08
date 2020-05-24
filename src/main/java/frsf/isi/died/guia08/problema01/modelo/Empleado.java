@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaFinalizadaAntesDeComenzarException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaNoComenzadaException;
 
@@ -199,9 +200,32 @@ public class Empleado {
 		}
 	}
 	
-	public void finalizar(Integer idTarea,String fecha) {
+	//-------------------------
+	//----- Ejercicio 2.f -----
+	//-------------------------
+	/** Considero necesaria la creación de una excepción que se lance si se trata de finalizar
+	 *  una tarea en una fecha anterior a la fecha de comienzo
+	 */
+	public void finalizar(Integer idTarea,String fecha) throws TareaInexistenteException, TareaNoComenzadaException, TareaFinalizadaAntesDeComenzarException {
 		// busca la tarea en la lista de tareas asignadas 
 		// si la tarea no existe lanza una excepción
 		// si la tarea existe indica como fecha de finalizacion la fecha y hora actual
+		Optional<Tarea> tarea = tareasAsignadas.stream().filter(t -> t.getId() == idTarea).findFirst();
+		if(tarea.isEmpty()) {
+			throw new TareaInexistenteException("La tarea que desea finalizar no se encuentra en la lista de tareas asignadas.");
+		}
+		else if(tarea.get().getFechaInicio() == null) {
+			throw new TareaNoComenzadaException();
+		}
+		else {
+			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+			LocalDateTime fechaFin = LocalDateTime.parse(fecha, formato);
+			if(fechaFin.isBefore(tarea.get().getFechaInicio())) {
+				throw new TareaFinalizadaAntesDeComenzarException();
+			}
+			else {
+				tarea.get().setFechaFin(fechaFin);
+			}
+		}
 	}
 }

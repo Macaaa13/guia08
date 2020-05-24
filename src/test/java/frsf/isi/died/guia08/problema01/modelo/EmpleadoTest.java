@@ -6,6 +6,7 @@ import org.junit.*;
 import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaFinalizadaAntesDeComenzarException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaNoComenzadaException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
@@ -272,7 +273,7 @@ public class EmpleadoTest {
 		assertEquals(fecha, t5.getFechaFin());
 	}
 	
-	//----- Ejercicio 2.d ------
+	//----- Ejercicio 2.e ------
 	//Test del método comenzar sobrecargado
 	@Test(expected = TareaInexistenteException.class)
 	public void testComenzarIntegerStringTareaInexistente() throws TareaInexistenteException  {
@@ -291,10 +292,30 @@ public class EmpleadoTest {
 		e3.comenzar(5, "01-09-2020 22:00");
 	}
 	
+	//----- Ejercicio 2.f ------
+	//Test del método comenzar sobrecargado
+	@Test(expected = TareaInexistenteException.class)
+	public void testFinalizarIntegerStringTareaInexistente() throws TareaInexistenteException, TareaNoComenzadaException, TareaFinalizadaAntesDeComenzarException {
+		e1.finalizar(6, "03-09-2020 22:00");
+	}
+	
+	@Test(expected = TareaNoComenzadaException.class)
+	public void testFinalizarIntegerStringTareaNoComenzada() throws TareaInexistenteException, TareaNoComenzadaException, TareaFinalizadaAntesDeComenzarException {
+		e1.finalizar(5, "03-09-2020 22:00");
+	}
+	
+	@Test(expected = TareaFinalizadaAntesDeComenzarException.class)
+	public void testFinalizarIntegerStringFechaFinErronea() throws TareaInexistenteException, TareaNoComenzadaException, TareaFinalizadaAntesDeComenzarException {
+		e1.comenzar(5, "03-09-2020 22:00");
+		e1.finalizar(5, "01-09-2020 22:00");
+	}
+	
 	@Test
-	@Ignore
-	public void testFinalizarIntegerString() {
-		fail("Not yet implemented");
+	public void testFinalizarIntegerString() throws TareaInexistenteException, TareaNoComenzadaException, TareaFinalizadaAntesDeComenzarException {
+		e1.comenzar(5, "01-09-2020 22:00");
+		e1.finalizar(5, "03-09-2020 22:00");
+		LocalDateTime fecha = LocalDateTime.of(2020, 9, 3, 22, 0);
+		assertEquals(fecha, t5.getFechaFin());
 	}
 
 }
