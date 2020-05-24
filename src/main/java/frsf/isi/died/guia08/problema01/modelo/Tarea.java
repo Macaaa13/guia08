@@ -3,6 +3,8 @@ package frsf.isi.died.guia08.problema01.modelo;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+
 public class Tarea {
 
 	//--- Atributos ---
@@ -83,12 +85,33 @@ public class Tarea {
 
 
 	//--- Métodos ---
-	public void asignarEmpleado(Empleado e) {
+	//-------------------------
+	//----- Ejercicio 3 -----
+	//-------------------------
+	/** Si la tarea no tiene un empleado asignado o ya fue finalizada, se verifica que el empleado
+	 *  cumpla las condiciones necesarias para ser asignado.
+	 */
+	public void asignarEmpleado(Empleado e) throws AsignacionIncorrectaException {
 		// si la tarea ya tiene un empleado asignado
 		// y tiene fecha de finalizado debe lanzar una excepcion
+//		if(this.getEmpleadoAsignado() != null) {
+//			throw new AsignacionIncorrectaException("La tarea ya tiene un empleado asignado.");
+//		}
+//		if(this.getFechaFin() != null) {
+//			throw new AsignacionIncorrectaException("La tarea ya ha finalizado.");
+//		}
+		if(e.asignarTarea(this)) {
+			this.setEmpleadoAsignado(e);
+			e.getTareasAsignadas().add(this);
+		}
+		else {
+			throw new AsignacionIncorrectaException("El empleado no puede ser asignado porque no cumple las condiciones suficientes.");
+		}
 	}
 	
-	//Ejercicio 2.b
+	//-------------------------
+	//----- Ejercicio 2.b -----
+	//-------------------------
 	/** Se estiman 4 horas de trabajo por día, por lo que se múltiplica por 4
 	 *	la diferencia en días entre la fecha de inicio y la final, obteniendo las horas
 	 *  trabajadas por días.

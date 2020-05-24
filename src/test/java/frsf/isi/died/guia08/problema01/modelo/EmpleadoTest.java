@@ -51,37 +51,30 @@ public class EmpleadoTest {
 	 *  Como el empleado es contratado y no tiene más de 5 tareas pendientes asignadas, se le puede asignar la tarea
 	 */
 	public void testAsignarTareaContratadoMenosDe5TareasPendientes() throws AsignacionIncorrectaException {
-		t6.setEmpleadoAsignado(e1);
 		assertTrue(e1.asignarTarea(t6));
 	}
 	
 	@Test
-	/**  Se le asigna el empleado a la tarea para evitar un NullPointException en el Predicate puedeAsignarTarea
-	 *  Como el empleado es contratado y tiene más de 5 tareas pendientes asignadas, no se le puede asignar la tarea
+	/** Como el empleado es contratado y tiene más de 5 tareas pendientes asignadas, no se le puede asignar la tarea
 	 */
 	public void testAsignarTareaContratadoMasde5TareasPendientes() throws AsignacionIncorrectaException {
-		t7.setEmpleadoAsignado(e1);
 		e1.getTareasAsignadas().add(t6);
 		assertFalse(e1.asignarTarea(t7));
 	}
 	
 	@Test
-	/** Se le asigna el empleado a la tarea para evitar un NullPointException en el Predicate puedeAsignarTarea
-	 *  Como el empleado es efectivo y las tareas pendientes asignadas no suman más de 15 horas
+	/** Como el empleado es efectivo y las tareas pendientes asignadas no suman más de 15 horas
 	 *  de trabajo estimado, se le puede asignar la tarea
 	 */
 	public void testAsignarTareaEfectivo15HorasOMenos() throws AsignacionIncorrectaException {
-		t1.setEmpleadoAsignado(e2);
 		assertTrue(e2.asignarTarea(t1));
 	}
 	
 	@Test
-	/**  Se le asigna el empleado a la tarea para evitar un NullPointException en el Predicate puedeAsignarTarea
-	 *  Como el empleado es efectivo y las tareas pendientes asignadas suman más de 15 horas
+	/** Como el empleado es efectivo y las tareas pendientes asignadas suman más de 15 horas
 	 *  de trabajo estimado, no se le puede asignar la tarea
 	 */
 	public void testAsignarTareaEfectivoMasDe15Horas() throws AsignacionIncorrectaException {
-		t1.setEmpleadoAsignado(e2);
 		e2.getTareasAsignadas().add(t2); // 19 horas
 		assertFalse(e2.asignarTarea(t1));
 	}
@@ -94,15 +87,6 @@ public class EmpleadoTest {
 	public void testAsignarTareaOtroEmpleadoAsignado() throws AsignacionIncorrectaException {
 		t1.setEmpleadoAsignado(e1);
 		e2.asignarTarea(t1);
-	}
-	
-	@Test
-	/** No se puede asignar una tarea que tiene otro empleado asignado. Como el empleado asignado 
-	 *  es el mismo al que se le quiere asignar la tarea, entonces ésta si se puede asignar
-	 */
-	public void testAsignarTareaMismoEmpleadoAsignado() throws AsignacionIncorrectaException {
-		t1.setEmpleadoAsignado(e2);
-		assertTrue(e2.asignarTarea(t1));
 	}
 	
 	@Test(expected = AsignacionIncorrectaException.class)

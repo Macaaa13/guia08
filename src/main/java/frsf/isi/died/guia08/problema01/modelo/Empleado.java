@@ -25,7 +25,7 @@ public class Empleado {
 	private List<Tarea> tareasAsignadas;
 	
 	private Function<Tarea, Double> calculoPagoPorTarea;
-	private Predicate<Tarea> puedeAsignarTarea;
+	private Predicate<Empleado> puedeAsignarTarea;
 
 	
 	//--- Constructores ---
@@ -78,7 +78,7 @@ public class Empleado {
 	//--- Métodos ---
 	
 	public void configurarEfectivo() {
-		puedeAsignarTarea = t -> this.efectivoTareasPendientes()<=15;
+		puedeAsignarTarea = e -> e.efectivoTareasPendientes()<=15;
 		calculoPagoPorTarea = t -> {
 			if(t.tareaAdelantada()) { return t.getDuracionEstimada()*this.costoHora*1.2;}
 			return t.getDuracionEstimada()*this.costoHora;
@@ -86,7 +86,7 @@ public class Empleado {
 	}
 	
 	public void configurarContratado() {
-		puedeAsignarTarea = t -> this.getTareasAsignadas().size()<=5;
+		puedeAsignarTarea = e -> e.tareasAsignadas.size()<=5;
 		calculoPagoPorTarea = t -> {
 			if(t.tareaAdelantada()) { return t.getDuracionEstimada()*this.costoHora*1.3;}
 			if(t.tareaAtrasada()) { return t.getDuracionEstimada()*this.costoHora*0.75; }
@@ -104,10 +104,13 @@ public class Empleado {
 	 *  o a una tarea que ya fue finalizada, se lanza una excepción
 	 */
 	public Boolean asignarTarea(Tarea t) throws AsignacionIncorrectaException {
-		if(t.getEmpleadoAsignado() != this || t.getFechaFin() != null) {
-			throw new AsignacionIncorrectaException();
+		if(t.getEmpleadoAsignado() != null) {
+			throw new AsignacionIncorrectaException("Debe seleccionar una tarea que no tenga un empleado asignado.");
 		}
-		return this.puedeAsignarTarea.test(t);
+		if(t.getFechaFin() != null) {
+			throw new AsignacionIncorrectaException("Debe seleccionar una tarea que no haya sido finalizada.");
+		}
+		return puedeAsignarTarea.test(this);
 	}
 
 	/** Comprueba que las tareas pendientes del empleado no sumen más de 15 horas
