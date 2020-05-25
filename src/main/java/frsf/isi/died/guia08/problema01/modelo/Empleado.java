@@ -76,7 +76,6 @@ public class Empleado {
 	
 	
 	//--- Métodos ---
-	
 	public void configurarEfectivo() {
 		puedeAsignarTarea = e -> e.efectivoTareasPendientes()<=15;
 		calculoPagoPorTarea = t -> {
@@ -231,4 +230,17 @@ public class Empleado {
 			}
 		}
 	}
+	
+	//-------------------------
+	//----- Ejercicio 4.a -----
+	//-------------------------
+	@Override
+	public boolean equals(Object o) {
+		Empleado e = (Empleado) o;
+		return(this.cuil == e.getCuil() &&
+			   this.nombre == e.getNombre() &&
+			   this.tipo == e.getTipo() &&
+			   this.costoHora.equals(e.getCostoHora()));
+	}
+	
 }

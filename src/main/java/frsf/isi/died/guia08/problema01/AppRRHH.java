@@ -1,5 +1,6 @@
 package frsf.isi.died.guia08.problema01;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -7,14 +8,37 @@ import java.util.function.Predicate;
 
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
+import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
 
 public class AppRRHH {
 
+	//--- Atributos ---
 	private List<Empleado> empleados;
+
+	//--- Constructor ---
+	public AppRRHH() {
+	empleados = new ArrayList<Empleado>();
+	}
 	
-	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costoHora) {
+	//--- Getters y Setters ---
+	public List<Empleado> getEmpleados() {
+		return empleados;
+	}
+
+	public void setEmpleados(List<Empleado> empleados) {
+		this.empleados = empleados;
+	}
+
+	//--- Métodos ---
+	//-------------------------
+	//----- Ejercicio 4.a -----
+	//-------------------------
+	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costo) {
 		// crear un empleado
 		// agregarlo a la lista
+		Empleado e = new Empleado(cuil, nombre, Tipo.CONTRATADO, costo);
+		e.configurarContratado();
+		this.empleados.add(e);
 	}
 	
 	public void agregarEmpleadoEfectivo(Integer cuil,String nombre,Double costoHora) {
