@@ -33,17 +33,23 @@ public class AppRRHH {
 	//-------------------------
 	//----- Ejercicio 4.a -----
 	//-------------------------
-	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costo) {
+	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costoHora) {
 		// crear un empleado
 		// agregarlo a la lista
-		Empleado e = new Empleado(cuil, nombre, Tipo.CONTRATADO, costo);
+		Empleado e = new Empleado(cuil, nombre, Tipo.CONTRATADO, costoHora);
 		e.configurarContratado();
 		this.empleados.add(e);
 	}
 	
+	//-------------------------
+	//----- Ejercicio 4.b -----
+	//-------------------------
 	public void agregarEmpleadoEfectivo(Integer cuil,String nombre,Double costoHora) {
 		// crear un empleado
-		// agregarlo a la lista		
+		// agregarlo a la lista
+		Empleado e = new Empleado(cuil, nombre, Tipo.EFECTIVO, costoHora);
+		e.configurarEfectivo();
+		this.empleados.add(e);
 	}
 	
 	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) {

@@ -237,7 +237,7 @@ public class Empleado {
 	@Override
 	public boolean equals(Object o) {
 		Empleado e = (Empleado) o;
-		return(this.cuil == e.getCuil() &&
+		return(this.cuil.equals(e.getCuil()) &&
 			   this.nombre == e.getNombre() &&
 			   this.tipo == e.getTipo() &&
 			   this.costoHora.equals(e.getCostoHora()));
