@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
 import frsf.isi.died.guia08.problema01.excepciones.EmpleadoInexistenteException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaNoComenzadaException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
@@ -88,9 +89,20 @@ public class AppRRHH {
 		}
 	}
 	
-	public void terminarTarea(Integer cuil,Integer idTarea) {
-		// crear un empleado
-		// agregarlo a la lista		
+	//-------------------------
+	//----- Ejercicio 4.e -----
+	//-------------------------
+	public void terminarTarea(Integer cuil,Integer idTarea) throws TareaInexistenteException, TareaNoComenzadaException, EmpleadoInexistenteException {
+		// busca el empleado por cuil en la lista de empleados
+		// con el método buscarEmpleado() actual de esta clase
+		// e invoca al método finalizar tarea	
+		Optional<Empleado> opt = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+		if(opt.isPresent()) {
+			opt.get().finalizar(idTarea);
+		}
+		else {
+			throw new EmpleadoInexistenteException("El empleado que busca no existe.");
+		}
 	}
 
 	public void cargarEmpleadosContratadosCSV(String nombreArchivo) {

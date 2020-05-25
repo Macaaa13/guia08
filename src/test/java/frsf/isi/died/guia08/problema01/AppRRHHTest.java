@@ -11,6 +11,7 @@ import org.junit.Test;
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
 import frsf.isi.died.guia08.problema01.excepciones.EmpleadoInexistenteException;
 import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaNoComenzadaException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
@@ -122,8 +123,46 @@ public class AppRRHHTest {
 		/** El empleado está en la lista de empleados pero no fue asignado a la tarea, por lo que no se le puede
 		 *  indicar que la comience
 	     */
-		public void testEmpezarTareaTareaInexistente() throws TareaInexistenteException, EmpleadoInexistenteException {
+		public void testEmpezarTareaInexistente() throws TareaInexistenteException, EmpleadoInexistenteException {
 			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
 			app.empezarTarea(200, 1);
+		}
+		
+		//----- Ejercicio 4.e -----
+		// Test del método terminarTarea
+		@Test
+		/** El empleado está en la lista de empleados, fue asignado a la tarea, la comenzó y puede terminarla, 
+		 *  por lo que la fecha final de la tarea debe ser distinta de null
+		 */
+		public void testTerminarTarea() throws AsignacionIncorrectaException, EmpleadoInexistenteException, TareaInexistenteException, TareaNoComenzadaException {
+			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
+			app.asignarTarea(200, 1, "Descripción 1", 3);
+			app.empezarTarea(200, 1);
+			app.terminarTarea(200, 1);
+			assertEquals(1, app.getEmpleados().stream()
+					  .filter(e -> e.equals(e2) &&
+                          e.getTareasAsignadas().stream().filter(t -> t.equals(t1) &&
+                          											t.getFechaFin()!=null).count()==1)
+				      .count());	
+		}
+		
+		@Test(expected = EmpleadoInexistenteException.class)
+		/** El empleado no está en la lista de empleados por lo que no se le puede indicar que termine la tarea
+	     */
+		public void testTerminarTareaEmpleadoInexistente() throws TareaInexistenteException, TareaNoComenzadaException, EmpleadoInexistenteException {
+			app.terminarTarea(200, 1);
+		}
+		
+		@Test(expected = TareaInexistenteException.class)
+		public void testTerminarTareaInexistente() throws TareaInexistenteException, TareaNoComenzadaException, EmpleadoInexistenteException {
+			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
+			app.terminarTarea(200, 1);
+		}
+		
+		@Test(expected = TareaNoComenzadaException.class)
+		public void testTerminarTareaNoComenzada() throws TareaInexistenteException, TareaNoComenzadaException, EmpleadoInexistenteException, AsignacionIncorrectaException {
+			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
+			app.asignarTarea(200, 1, "Descripción 1", 3);
+			app.terminarTarea(200, 1);
 		}
 }
