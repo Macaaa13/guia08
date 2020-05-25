@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+import frsf.isi.died.guia08.problema01.excepciones.EmpleadoInexistenteException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
@@ -56,7 +58,7 @@ public class AppRRHH {
 	//-------------------------
 	//----- Ejercicio 4.c -----
 	//-------------------------
-	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) throws AsignacionIncorrectaException {
+	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) throws AsignacionIncorrectaException, EmpleadoInexistenteException {
 		// crear un empleado
 		// con el método buscarEmpleado() de esta clase
 		// agregarlo a la lista	
@@ -66,14 +68,24 @@ public class AppRRHH {
 			t.asignarEmpleado(opt.get());
 		}
 		else {
-			throw new AsignacionIncorrectaException("El empleado al que desea asignarle la tarea no existe.");
+			throw new EmpleadoInexistenteException("El empleado al que desea asignarle la tarea no existe.");
 		}
 	}
 	
-	public void empezarTarea(Integer cuil,Integer idTarea) {
+	//-------------------------
+	//----- Ejercicio 4.d -----
+	//-------------------------
+	public void empezarTarea(Integer cuil,Integer idTarea) throws TareaInexistenteException, EmpleadoInexistenteException {
 		// busca el empleado por cuil en la lista de empleados
 		// con el método buscarEmpleado() actual de esta clase
 		// e invoca al método comenzar tarea
+		Optional<Empleado> opt = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+		if(opt.isPresent()) {
+			opt.get().comenzar(idTarea);
+		}
+		else {
+			throw new EmpleadoInexistenteException("El empleado que busca no existe.");
+		}
 	}
 	
 	public void terminarTarea(Integer cuil,Integer idTarea) {

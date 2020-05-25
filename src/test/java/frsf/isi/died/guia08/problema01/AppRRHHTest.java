@@ -2,10 +2,15 @@ package frsf.isi.died.guia08.problema01;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
+import frsf.isi.died.guia08.problema01.excepciones.EmpleadoInexistenteException;
+import frsf.isi.died.guia08.problema01.excepciones.TareaInexistenteException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
@@ -24,6 +29,7 @@ public class AppRRHHTest {
 	}
 	
 	//----- Ejercicio 4.a -----
+	// Test del método agregarEmpleadoContratado
 	@Test
 	public void testAgregarEmpleadoContratado() {
 		app.agregarEmpleadoContratado(100, "Juan", 150.0);
@@ -31,6 +37,7 @@ public class AppRRHHTest {
 	}
 	
 	//----- Ejercicio 4.b -----
+	// Test del método asignarTarea
 	@Test
 	public void testAgregarEmpleadoEfectivo() {
 		app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
@@ -38,13 +45,13 @@ public class AppRRHHTest {
 	}
 	
 	//----- Ejercicio 4.c -----
-	// Test del método asignarTarea
+	// Test del método agregarEmpleadoEfectivo
 		@Test
 		/** El empleado está en la lista de empleados y cumple las condiciones necesarias para ser
 		 *  asignado a la tarea, por lo que se busca en esa lista al empleado y se verifica que tenga
 		 *  la tarea asignada.
 		 */
-		public void testAsignarTarea() throws AsignacionIncorrectaException {
+		public void testAsignarTarea() throws AsignacionIncorrectaException, EmpleadoInexistenteException {
 			app.agregarEmpleadoContratado(100, "Juan", 150.0);
 			app.asignarTarea(100, 1, "Descripción 1", 3);
 			assertEquals(1, app.getEmpleados().stream()
@@ -54,10 +61,10 @@ public class AppRRHHTest {
 		}
 		
 		
-		@Test(expected = AsignacionIncorrectaException.class)
+		@Test(expected = EmpleadoInexistenteException.class)
 		/** El empleado no está en la lista de tareas, por lo que no puede ser asignado a una tarea.
 		 */
-		public void testAsignarTareaAEmpleadoInexistente() throws AsignacionIncorrectaException {
+		public void testAsignarTareaAEmpleadoInexistente() throws AsignacionIncorrectaException, EmpleadoInexistenteException {
 			app.asignarTarea(100, 1, "Descripción 1", 3);
 		}
 		
@@ -65,7 +72,7 @@ public class AppRRHHTest {
 		/** El empleado está en la lista de tareas, pero ya tiene más de 5 tareas asignadas, por lo que no es
 		 *  posible realizar la asignación.
 		 */
-		public void testAsignarTareaEmpleadoContratadoSinCondicionesSuficientes() throws AsignacionIncorrectaException {
+		public void testAsignarTareaEmpleadoContratadoSinCondicionesSuficientes() throws AsignacionIncorrectaException, EmpleadoInexistenteException {
 			app.agregarEmpleadoContratado(100, "Juan", 150.0);
 			app.asignarTarea(100, 1, "Descripción 1", 3);
 			app.asignarTarea(100, 2, "Descripción 2", 12);
@@ -77,7 +84,7 @@ public class AppRRHHTest {
 		}
 		
 		@Test(expected = AsignacionIncorrectaException.class)
-		public void testAsignarTareaEmpleadoEfectivoSinCondicionesSuficientes() throws AsignacionIncorrectaException {
+		public void testAsignarTareaEmpleadoEfectivoSinCondicionesSuficientes() throws AsignacionIncorrectaException, EmpleadoInexistenteException {
 			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
 			//Al no tener tareas la cantidad de horas estimadas de trabajo es 0 y puede asignarse la tarea
 			app.asignarTarea(200, 1, "Descripción 1", 12); 
@@ -87,4 +94,36 @@ public class AppRRHHTest {
 			app.asignarTarea(200, 3, "Descripción 3", 5);
 		}
 		
+		//----- Ejercicio 4.d -----
+		// Test del método empezarTarea
+		@Test
+		/** El empleado está en la lista de empleados, fue asignado a la tarea y puede comenzarla, por lo que la
+		 *  fecha de inicio de la tarea debe ser distinta de null
+		 */
+		public void testEmpezarTarea() throws EmpleadoInexistenteException, TareaInexistenteException, AsignacionIncorrectaException {
+			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
+			app.asignarTarea(200, 1, "Descripción 1", 3);
+			app.empezarTarea(200, 1);
+			assertEquals(1, app.getEmpleados().stream()
+					  .filter(e -> e.equals(e2) &&
+                            e.getTareasAsignadas().stream().filter(t -> t.equals(t1) &&
+                            											t.getFechaInicio()!=null).count()==1)
+				      .count());	
+		}
+		
+		@Test(expected = EmpleadoInexistenteException.class)
+	    /** El empleado no está en la lista de empleados por lo que no se le puede indicar que comience la tarea
+	     */
+		public void testEmpezarTareaEmpleadoInexistente() throws TareaInexistenteException, EmpleadoInexistenteException {
+			app.empezarTarea(200, 1);
+		}
+		
+		@Test(expected = TareaInexistenteException.class)
+		/** El empleado está en la lista de empleados pero no fue asignado a la tarea, por lo que no se le puede
+		 *  indicar que la comience
+	     */
+		public void testEmpezarTareaTareaInexistente() throws TareaInexistenteException, EmpleadoInexistenteException {
+			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
+			app.empezarTarea(200, 1);
+		}
 }
