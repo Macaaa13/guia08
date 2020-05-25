@@ -136,5 +136,14 @@ public class Tarea {
 		return false;
 	}
 
-	
+	//-------------------------
+	//----- Ejercicio 4.c -----
+	//-------------------------
+	@Override
+	public boolean equals(Object o) {
+		Tarea t = (Tarea) o;
+		return(this.id.equals(t.getId()) &&
+			   this.descripcion == t.getDescripcion() &&
+			   this.duracionEstimada.equals(t.getDuracionEstimada()));
+	}
 }

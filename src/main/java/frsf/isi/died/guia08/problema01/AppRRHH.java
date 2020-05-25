@@ -1,11 +1,12 @@
 package frsf.isi.died.guia08.problema01;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
+import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
 import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
@@ -52,10 +53,21 @@ public class AppRRHH {
 		this.empleados.add(e);
 	}
 	
-	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) {
+	//-------------------------
+	//----- Ejercicio 4.c -----
+	//-------------------------
+	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) throws AsignacionIncorrectaException {
 		// crear un empleado
 		// con el método buscarEmpleado() de esta clase
-		// agregarlo a la lista		
+		// agregarlo a la lista	
+		Optional<Empleado> opt = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+		if(opt.isPresent()) {
+			Tarea t = new Tarea(idTarea, descripcion, duracionEstimada);
+			t.asignarEmpleado(opt.get());
+		}
+		else {
+			throw new AsignacionIncorrectaException("El empleado al que desea asignarle la tarea no existe.");
+		}
 	}
 	
 	public void empezarTarea(Integer cuil,Integer idTarea) {
