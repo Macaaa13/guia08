@@ -2,10 +2,10 @@ package frsf.isi.died.guia08.problema01;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDateTime;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
@@ -20,13 +20,14 @@ public class AppRRHHTest {
 
 	Empleado e1 = new Empleado(100, "Juan", Tipo.CONTRATADO, 150.0);
 	Empleado e2 = new Empleado(200, "Marta", Tipo.EFECTIVO, 200.0);
+	Empleado e3 = new Empleado(300, "Anna", Tipo.CONTRATADO, 300.0);
+	Empleado e4 = new Empleado(400, "Matt", Tipo.EFECTIVO, 250.0);
 	Tarea t1 = new Tarea(1, "Descripción 1", 3);
 	AppRRHH app = new AppRRHH();
 	
 	@Before
 	public void init() throws AsignacionIncorrectaException {
-		e1.configurarContratado();
-		e2.configurarEfectivo();
+		
 	}
 	
 	//----- Ejercicio 4.a -----
@@ -164,5 +165,25 @@ public class AppRRHHTest {
 			app.agregarEmpleadoEfectivo(200, "Marta", 200.0);
 			app.asignarTarea(200, 1, "Descripción 1", 3);
 			app.terminarTarea(200, 1);
+		}
+		
+		//----- Ejercicio 4.f -----
+		// Test del método terminarTarea
+		@Test
+		/** tareas.csv
+		 *  100;"Juan";150.0
+		 *  300;"Anna";300.0
+		 */
+		public void testCargarEmpleadosContratadosCSV() throws FileNotFoundException, IOException {
+			app.cargarEmpleadosContratadosCSV("tareas.csv");
+			long l = app.getEmpleados().stream().filter(e -> e.getCuil().equals(e1.getCuil()) ||
+													e.getCuil().equals(e3.getCuil()))
+									   .count();
+			assertEquals(2,l);
+		}
+		
+		@Test(expected = FileNotFoundException.class)
+		public void testCargarEmpleadosContratadosCSVArchivoInexistente() throws FileNotFoundException, IOException {
+			app.cargarEmpleadosContratadosCSV("tareasInexistente.csv");
 		}
 }

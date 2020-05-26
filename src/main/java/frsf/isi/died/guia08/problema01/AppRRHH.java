@@ -1,5 +1,10 @@
 package frsf.isi.died.guia08.problema01;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -105,9 +110,21 @@ public class AppRRHH {
 		}
 	}
 
-	public void cargarEmpleadosContratadosCSV(String nombreArchivo) {
+	//-------------------------
+	//----- Ejercicio 4.f -----
+	//-------------------------
+	public void cargarEmpleadosContratadosCSV(String nombreArchivo) throws FileNotFoundException, IOException {
 		// leer datos del archivo
 		// por cada fila invocar a agregarEmpleadoContratado
+		try (Reader fileReader = new FileReader(nombreArchivo)) {
+			try (BufferedReader in = new BufferedReader(fileReader)) {
+				String linea = null;
+				while((linea = in.readLine()) != null) {
+					String[] fila = linea.split(";");
+						this.agregarEmpleadoContratado(Integer.valueOf(fila[0]), fila[1], Double.valueOf(fila[2]));
+				}
+			}
+		}
 	}
 
 	public void cargarEmpleadosEfectivosCSV(String nombreArchivo) {
@@ -137,4 +154,10 @@ public class AppRRHH {
 				.mapToDouble(e -> e.salario())
 				.sum();
 	}
+
+	@Override
+	public String toString() {
+		return empleados.toString();
+	}
+	
 }

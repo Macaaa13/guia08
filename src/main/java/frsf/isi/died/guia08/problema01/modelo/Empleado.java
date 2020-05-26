@@ -242,5 +242,14 @@ public class Empleado {
 			   this.tipo == e.getTipo() &&
 			   this.costoHora.equals(e.getCostoHora()));
 	}
+
+	@Override
+	public String toString() {
+		return cuil +", "+nombre+", "+tipo+", "+costoHora;
+	}
+	
+	public String asCsv() {
+		return cuil+";\""+nombre+"\";"+costoHora;
+	}
 	
 }
