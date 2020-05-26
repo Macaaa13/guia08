@@ -127,9 +127,21 @@ public class AppRRHH {
 		}
 	}
 
-	public void cargarEmpleadosEfectivosCSV(String nombreArchivo) {
+	//-------------------------
+	//----- Ejercicio 4.g -----
+	//-------------------------
+	public void cargarEmpleadosEfectivosCSV(String nombreArchivo) throws FileNotFoundException, IOException {
 		// leer datos del archivo
-		// por cada fila invocar a agregarEmpleadoContratado		
+		// por cada fila invocar a agregarEmpleadoEfectivo
+		try (Reader fileReader = new FileReader(nombreArchivo)) {
+			try (BufferedReader in = new BufferedReader(fileReader)) {
+				String linea = null;
+				while((linea = in.readLine()) != null) {
+					String[] fila = linea.split(";");
+						this.agregarEmpleadoEfectivo(Integer.valueOf(fila[0]), fila[1], Double.valueOf(fila[2]));
+				}
+			}
+		}
 	}
 
 	public void cargarTareasCSV(String nombreArchivo) {

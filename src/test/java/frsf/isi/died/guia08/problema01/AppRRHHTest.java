@@ -2,10 +2,12 @@ package frsf.isi.died.guia08.problema01;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
@@ -24,11 +26,6 @@ public class AppRRHHTest {
 	Empleado e4 = new Empleado(400, "Matt", Tipo.EFECTIVO, 250.0);
 	Tarea t1 = new Tarea(1, "Descripción 1", 3);
 	AppRRHH app = new AppRRHH();
-	
-	@Before
-	public void init() throws AsignacionIncorrectaException {
-		
-	}
 	
 	//----- Ejercicio 4.a -----
 	// Test del método agregarEmpleadoContratado
@@ -59,7 +56,7 @@ public class AppRRHHTest {
 			assertEquals(1, app.getEmpleados().stream()
 											  .filter(e -> e.equals(e1) &&
 					                                  e.getTareasAsignadas().stream().filter(t -> t.equals(t1)).count()==1)
-										      .count());							   
+										      .count());
 		}
 		
 		
@@ -168,16 +165,22 @@ public class AppRRHHTest {
 		}
 		
 		//----- Ejercicio 4.f -----
-		// Test del método terminarTarea
+		// Test del método cargarEmpleadosContratadosCSV
 		@Test
 		/** tareas.csv
 		 *  100;"Juan";150.0
 		 *  300;"Anna";300.0
 		 */
 		public void testCargarEmpleadosContratadosCSV() throws FileNotFoundException, IOException {
+			try(Writer fileWriter = new FileWriter("tareas.csv")){
+				try(BufferedWriter out = new BufferedWriter(fileWriter)){
+					out.write(e1.getCuil()+";\""+e1.getNombre()+"\";"+e1.getCostoHora()+System.getProperty("line.separator"));
+					out.write(e3.getCuil()+";\""+e3.getNombre()+"\";"+e3.getCostoHora()+System.getProperty("line.separator"));
+				}
+			}
 			app.cargarEmpleadosContratadosCSV("tareas.csv");
 			long l = app.getEmpleados().stream().filter(e -> e.getCuil().equals(e1.getCuil()) ||
-													e.getCuil().equals(e3.getCuil()))
+													         e.getCuil().equals(e3.getCuil()))
 									   .count();
 			assertEquals(2,l);
 		}
@@ -185,5 +188,31 @@ public class AppRRHHTest {
 		@Test(expected = FileNotFoundException.class)
 		public void testCargarEmpleadosContratadosCSVArchivoInexistente() throws FileNotFoundException, IOException {
 			app.cargarEmpleadosContratadosCSV("tareasInexistente.csv");
+		}
+		
+		//----- Ejercicio 4.g -----
+		// Test del método cargarEmpleadosEfectivosCSV
+		@Test
+		/** tareas.csv
+		 *  200;"Marta";200.0
+		 *  400;"Matt";250.0
+		 */
+		public void testCargarEmpleadosEfectivosCSV() throws FileNotFoundException, IOException {
+			try(Writer fileWriter = new FileWriter("tareas.csv")){
+				try(BufferedWriter out = new BufferedWriter(fileWriter)){
+					out.write(e2.getCuil()+";\""+e2.getNombre()+"\";"+e2.getCostoHora()+System.getProperty("line.separator"));
+					out.write(e4.getCuil()+";\""+e4.getNombre()+"\";"+e4.getCostoHora()+System.getProperty("line.separator"));
+				}
+			}
+			app.cargarEmpleadosEfectivosCSV("tareas.csv");
+			long l = app.getEmpleados().stream().filter(e -> e.getCuil().equals(e2.getCuil()) ||
+													         e.getCuil().equals(e4.getCuil()))
+									   .count();
+			assertEquals(2,l);
+		}
+		
+		@Test(expected = FileNotFoundException.class)
+		public void testCargarEmpleadosEfectivosCSVArchivoInexistente() throws FileNotFoundException, IOException {
+			app.cargarEmpleadosEfectivosCSV("tareasInexistente.csv");
 		}
 }

@@ -248,8 +248,4 @@ public class Empleado {
 		return cuil +", "+nombre+", "+tipo+", "+costoHora;
 	}
 	
-	public String asCsv() {
-		return cuil+";\""+nombre+"\";"+costoHora;
-	}
-	
 }
