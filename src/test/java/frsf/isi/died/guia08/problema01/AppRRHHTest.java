@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import frsf.isi.died.guia08.problema01.excepciones.AsignacionIncorrectaException;
@@ -25,6 +26,7 @@ public class AppRRHHTest {
 	Empleado e3 = new Empleado(300, "Anna", Tipo.CONTRATADO, 300.0);
 	Empleado e4 = new Empleado(400, "Matt", Tipo.EFECTIVO, 250.0);
 	Tarea t1 = new Tarea(1, "Descripción 1", 3);
+	Tarea t2 = new Tarea(2, "Descripción 2", 20);
 	AppRRHH app = new AppRRHH();
 	
 	//----- Ejercicio 4.a -----
@@ -172,13 +174,13 @@ public class AppRRHHTest {
 		 *  300;"Anna";300.0
 		 */
 		public void testCargarEmpleadosContratadosCSV() throws FileNotFoundException, IOException {
-			try(Writer fileWriter = new FileWriter("tareas.csv")){
+			try(Writer fileWriter = new FileWriter("empleados.csv")){
 				try(BufferedWriter out = new BufferedWriter(fileWriter)){
 					out.write(e1.getCuil()+";\""+e1.getNombre()+"\";"+e1.getCostoHora()+System.getProperty("line.separator"));
 					out.write(e3.getCuil()+";\""+e3.getNombre()+"\";"+e3.getCostoHora()+System.getProperty("line.separator"));
 				}
 			}
-			app.cargarEmpleadosContratadosCSV("tareas.csv");
+			app.cargarEmpleadosContratadosCSV("empleados.csv");
 			long l = app.getEmpleados().stream().filter(e -> e.getCuil().equals(e1.getCuil()) ||
 													         e.getCuil().equals(e3.getCuil()))
 									   .count();
@@ -187,7 +189,7 @@ public class AppRRHHTest {
 		
 		@Test(expected = FileNotFoundException.class)
 		public void testCargarEmpleadosContratadosCSVArchivoInexistente() throws FileNotFoundException, IOException {
-			app.cargarEmpleadosContratadosCSV("tareasInexistente.csv");
+			app.cargarEmpleadosContratadosCSV("empleadosInexistente.csv");
 		}
 		
 		//----- Ejercicio 4.g -----
@@ -198,13 +200,13 @@ public class AppRRHHTest {
 		 *  400;"Matt";250.0
 		 */
 		public void testCargarEmpleadosEfectivosCSV() throws FileNotFoundException, IOException {
-			try(Writer fileWriter = new FileWriter("tareas.csv")){
+			try(Writer fileWriter = new FileWriter("empleados.csv")){
 				try(BufferedWriter out = new BufferedWriter(fileWriter)){
 					out.write(e2.getCuil()+";\""+e2.getNombre()+"\";"+e2.getCostoHora()+System.getProperty("line.separator"));
 					out.write(e4.getCuil()+";\""+e4.getNombre()+"\";"+e4.getCostoHora()+System.getProperty("line.separator"));
 				}
 			}
-			app.cargarEmpleadosEfectivosCSV("tareas.csv");
+			app.cargarEmpleadosEfectivosCSV("empleados.csv");
 			long l = app.getEmpleados().stream().filter(e -> e.getCuil().equals(e2.getCuil()) ||
 													         e.getCuil().equals(e4.getCuil()))
 									   .count();
@@ -213,6 +215,63 @@ public class AppRRHHTest {
 		
 		@Test(expected = FileNotFoundException.class)
 		public void testCargarEmpleadosEfectivosCSVArchivoInexistente() throws FileNotFoundException, IOException {
-			app.cargarEmpleadosEfectivosCSV("tareasInexistente.csv");
+			app.cargarEmpleadosEfectivosCSV("empleadosInexistente.csv");
 		}
+		
+		//----- Ejercicio 4.h -----
+		// Test del método cargarTareasCSV
+		@Test
+		/** Para poder cargarle la tarea al empleado correspondiente, éste debe existir en la lista de empleados
+		 *  Si se carga sin problemas, al buscar las tareas del empleado se debe encontrar una que coincida con la
+		 *  tarea cargada.
+		 */
+		public void testCargarTareasCSV() throws FileNotFoundException, IOException, AsignacionIncorrectaException, EmpleadoInexistenteException {
+			e1.configurarContratado();
+			app.getEmpleados().add(e1);
+			try(Writer fileWriter = new FileWriter("tareas.csv")){
+				try(BufferedWriter out = new BufferedWriter(fileWriter)){
+					out.write(e1.getCuil()+";"+t1.getId()+";\""+t1.getDescripcion()+"\";"+t1.getDuracionEstimada()+System.getProperty("line.separator"));
+				}
+			}
+			app.cargarTareasCSV("tareas.csv");
+			long l = app.getEmpleados().stream().filter(e -> e.getCuil() == e1.getCuil() &&
+													e.getTareasAsignadas().stream().filter(t -> t.getId() == t1.getId())
+																				   .count()==1)
+									   .count();
+			assertEquals(1,l);
+		}
+		
+		@Test(expected = EmpleadoInexistenteException.class)
+		/** Como el empleado no está en la lista de empleados, no se le puede cargar la tarea
+		 */
+		public void testCargarTareasCSVEmpleadoInexistente() throws FileNotFoundException, IOException, AsignacionIncorrectaException, EmpleadoInexistenteException {
+			try(Writer fileWriter = new FileWriter("tareas.csv")){
+				try(BufferedWriter out = new BufferedWriter(fileWriter)){
+					out.write(e1.getCuil()+";"+t1.getId()+";\""+t1.getDescripcion()+"\";"+t1.getDuracionEstimada()+System.getProperty("line.separator"));
+				}
+			}
+			app.cargarTareasCSV("tareas.csv");
+		}
+		
+		@Test(expected = AsignacionIncorrectaException.class)
+		/** El empleado está en la lista de empleados, pero no cumple las condiciones suficientes como para
+		 *  poder cargarle la tarea.
+		 */
+		public void testCargarTareasCSVEmpleadoSinCondiciones() throws FileNotFoundException, IOException, AsignacionIncorrectaException, EmpleadoInexistenteException {
+			e2.configurarEfectivo();
+			e2.getTareasAsignadas().add(t2); //20 horas estimadas de trabajo
+			app.getEmpleados().add(e2);
+			try(Writer fileWriter = new FileWriter("tareas.csv")){
+				try(BufferedWriter out = new BufferedWriter(fileWriter)){
+					out.write(e2.getCuil()+";"+t1.getId()+";\""+t1.getDescripcion()+"\";"+t1.getDuracionEstimada()+System.getProperty("line.separator"));
+				}
+			}
+			app.cargarTareasCSV("tareas.csv");
+		}
+		
+		@Test(expected = FileNotFoundException.class)
+		public void testTareaCSVArchivoInexistente() throws FileNotFoundException, IOException, AsignacionIncorrectaException, EmpleadoInexistenteException {
+			app.cargarTareasCSV("tareasInexistente.csv");
+		}
+		
 }

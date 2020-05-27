@@ -144,10 +144,22 @@ public class AppRRHH {
 		}
 	}
 
-	public void cargarTareasCSV(String nombreArchivo) {
+	//-------------------------
+	//----- Ejercicio 4.h -----
+	//-------------------------
+	public void cargarTareasCSV(String nombreArchivo) throws FileNotFoundException, IOException, AsignacionIncorrectaException, EmpleadoInexistenteException {
 		// leer datos del archivo
 		// cada fila del archivo tendrá:
-		// cuil del empleado asignado, numero de la taera, descripcion y duración estimada en horas.
+		// cuil del empleado asignado, numero de la tarea, descripcion y duración estimada en horas.
+		try (Reader fileReader = new FileReader(nombreArchivo)) {
+			try (BufferedReader in = new BufferedReader(fileReader)) {
+				String linea = null;
+				while((linea = in.readLine()) != null) {
+					String[] fila = linea.split(";");
+					asignarTarea(Integer.valueOf(fila[0]),Integer.valueOf(fila[1]),fila[2], Integer.valueOf(fila[3]));
+				}
+			}
+		}
 	}
 	
 	private void guardarTareasTerminadasCSV() {
